@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1032969300829",
+    "firebase_url": "https://crime-map-6ce5b.firebaseio.com",
+    "project_id": "crime-map-6ce5b",
+    "storage_bucket": "crime-map-6ce5b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1032969300829:android:7752f671ca2e0fda1716b4",
+        "android_client_info": {
+          "package_name": "com.kalela.crimemap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1032969300829-3i4pvqe7c0nh269bvv56l94cbbvia0be.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kalela.crimemap",
+            "certificate_hash": "643ca56cc83ab10325f82c940ede6a0094e0e124"
+          }
+        },
+        {
+          "client_id": "1032969300829-64fc0a3soo60nc9vrullgasbpp8g4dm1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAV3EqN6IBbYb0AV6x02SUhsHQvgncRV6g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1032969300829-64fc0a3soo60nc9vrullgasbpp8g4dm1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
