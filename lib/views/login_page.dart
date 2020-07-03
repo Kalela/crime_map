@@ -2,7 +2,7 @@ import 'package:crimemap/model/app_state.dart';
 import 'package:crimemap/redux/actions.dart';
 import 'package:crimemap/util/global_app_constants.dart';
 import 'package:crimemap/util/helper_functions.dart';
-import 'package:crimemap/views/home_page.dart';
+import 'package:crimemap/views/map_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -356,7 +356,7 @@ class LoginPage extends StatelessWidget {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) {
-                  return HomePage();
+                  return MapPage();
                 },
               ),
             );

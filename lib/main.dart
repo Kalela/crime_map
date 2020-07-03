@@ -1,6 +1,6 @@
 import 'package:crimemap/redux/reducers.dart';
 import 'package:crimemap/util/global_app_constants.dart';
-import 'package:crimemap/views/home_page.dart';
+import 'package:crimemap/views/map_page.dart';
 import 'package:crimemap/views/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -29,7 +29,7 @@ class CrimeMapApp extends StatelessWidget {
       child: MaterialApp(
         theme: ThemeData(primaryColor: GlobalAppConstants.appMainColor),
         title: 'Crime Map',
-        home: store.state.user == null ? LoginPage() : HomePage(),
+        home: store.state.user == null ? LoginPage() : MapPage(),
       ),
     );
   }

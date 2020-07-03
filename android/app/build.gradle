@@ -21,9 +21,9 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-def googleMapApiKey = localProperties.getProperty('google.map.key')
-if (googleMapApiKey == null) {
-    throw new GradleException("Google Map Key not found. Define location with google.map.key in the local.properties file.")
+def googleMapKey = System.getenv("googleMapsKey")
+if (googleMapKey == null) {
+    throw new GradleException("Google Map Key not found. Define googleMapsKey in the system environment.")
 }
 
 apply plugin: 'com.android.application'
