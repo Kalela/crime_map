@@ -1,11 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'location.dart';
+
 class AppState {
   bool isLoading = false;
   bool showRegister = false;
   FirebaseUser user;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  Location currentLocation;
 
   AppState();
 
@@ -14,5 +17,6 @@ class AppState {
     showRegister = another.showRegister;
     user = another.user;
     markers = another.markers;
+    currentLocation = another.currentLocation;
   }
 }

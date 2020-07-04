@@ -1,0 +1,1 @@
+double text32 = 32;

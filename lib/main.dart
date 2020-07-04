@@ -6,7 +6,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
 import 'model/app_state.dart';
-import 'util/colorconstants.dart';
+import 'util/color_constants.dart';
 
 void main() {
   var appState = AppState();

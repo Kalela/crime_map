@@ -1,6 +1,6 @@
 import 'package:crimemap/model/app_state.dart';
 import 'package:crimemap/redux/actions.dart';
-import 'package:crimemap/util/colorconstants.dart';
+import 'package:crimemap/util/color_constants.dart';
 import 'package:crimemap/util/helper_functions.dart';
 import 'package:crimemap/util/strings.dart';
 import 'package:crimemap/views/map_page.dart';
