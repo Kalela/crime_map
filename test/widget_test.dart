@@ -7,24 +7,28 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:crimemap/model/app_state.dart';
+import 'package:mockito/mockito.dart';
+import 'package:redux/redux.dart';
 
 import 'package:crimemap/main.dart';
 
+class MockStore extends Mock implements Store<AppState> {}
+
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(CrimeMapApp());
+  MockStore mockStore;
+  setUp(() {
+    mockStore = MockStore();
+    when(mockStore.state).thenReturn(new AppState());
+    when(mockStore.onChange)
+        .thenAnswer((_) => Stream.fromIterable([new AppState()]));
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  testWidgets('Login page loads', (WidgetTester tester) async {
+    await tester.pumpWidget(CrimeMapApp(store: mockStore));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    expect(mockStore.state.user, null);
+    expect(find.text('Sign in with Google'), findsOneWidget);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
   });
 }
