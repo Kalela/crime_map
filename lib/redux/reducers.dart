@@ -1,7 +1,12 @@
 import 'package:crimemap/model/app_state.dart';
+import 'package:crimemap/redux/actions.dart';
 
 AppState reducer(AppState prevState, dynamic action) {
   AppState newState = AppState.fromAppState(prevState);
+
+  if (action is FirebaseUserAction) {
+    newState.user = action.payload;
+  }
 
   return newState;
 }
