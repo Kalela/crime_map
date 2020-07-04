@@ -10,7 +10,6 @@ class MapPage extends StatelessWidget {
   Completer<GoogleMapController> _controller = Completer();
   GoogleMapController mapController;
   static const LatLng _center = const LatLng(45.521563, -122.677433);
-  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   Location location = new Location();
 
   @override
@@ -32,7 +31,7 @@ class MapPage extends StatelessWidget {
                       mapController = controller;
                       _controller.complete(controller);
                     },
-                    markers: Set<Marker>.of(markers.values),
+                    markers: Set<Marker>.of(state.markers.values),
                     zoomControlsEnabled: false,
                   ),
                 ),
@@ -41,6 +40,8 @@ class MapPage extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(30.0),
                     child: FloatingActionButton(
+
+                      backgroundColor: appMainColor,
                       elevation: 5,
                       onPressed: () {
                         print("add pressed");
@@ -55,18 +56,13 @@ class MapPage extends StatelessWidget {
         });
   }
 
-  void addMarkerToMarkerList(double lat, double lng, BuildContext context) {
-    markers.clear();
+  void addMarkerToMarkerList(double lat, double lng, BuildContext context, AppState state) {
+    state.markers.clear();
     Marker marker = Marker(
         markerId: MarkerId('currentSelected'), position: LatLng(lat, lng));
     // setState(() {
     //   markers[marker.markerId] = marker;
     // });
-  }
-
-  void resetCameraPosition() {
-    markers.clear();
-    animateCameraPosition(_center.latitude, _center.longitude, 1.0);
   }
 
   void animateCameraPosition(lat, lng, zoom) {

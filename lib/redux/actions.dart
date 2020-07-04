@@ -23,15 +23,8 @@ class FirebaseUserAction {
 }
 
 class MapMarkersAction {
-  final List<Marker> payload;
+  final Map<MarkerId, Marker> payload;
 
   MapMarkersAction(this.payload);
-
-}
-
-class MapMarkerAction {
-  final Marker payload;
-
-  MapMarkerAction(this.payload);
 
 }

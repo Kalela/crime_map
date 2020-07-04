@@ -6,6 +6,8 @@ AppState reducer(AppState prevState, dynamic action) {
 
   if (action is FirebaseUserAction) {
     newState.user = action.payload;
+  } else if (action is IsLoadingAction) {
+    newState.isLoading = action.payload;
   }
 
   return newState;

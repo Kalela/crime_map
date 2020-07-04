@@ -5,7 +5,7 @@ class AppState {
   bool isLoading = false;
   bool showRegister = false;
   FirebaseUser user;
-  List<Marker> markers;
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
 
   AppState();
 
