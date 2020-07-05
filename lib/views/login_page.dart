@@ -2,6 +2,7 @@ import 'package:crimemap/model/app_state.dart';
 import 'package:crimemap/redux/actions.dart';
 import 'package:crimemap/util/color_constants.dart';
 import 'package:crimemap/util/helper_functions.dart';
+import 'package:crimemap/util/size_constants.dart';
 import 'package:crimemap/util/strings.dart';
 import 'package:crimemap/views/map_page.dart';
 import 'package:flutter/material.dart';
@@ -20,19 +21,19 @@ class LoginPage extends StatelessWidget {
       builder: (context, state) {
         return WillPopScope(
           onWillPop: () {
-            if (state.showRegister == true) {
-              StoreProvider.of<AppState>(context)
-                  .dispatch(ShowRegisterAction(false));
-            } else {
-              Navigator.pop(context);
-            }
           },
           child: Scaffold(
               backgroundColor: appMainColor,
               body: Container(
                 padding: EdgeInsets.only(top: 300),
                 color: appMainColor,
-                child: Center(child: _signInButton(context, state)),
+                child: Center(child: Column(
+                  children: <Widget>[
+                    Text(app_name, style: TextStyle(fontSize: fontSize32, color: Colors.white),),
+                    Padding(padding: EdgeInsets.only(top: padding150),),
+                    _signInButton(context, state),
+                  ],
+                )),
               )),
         );
       },

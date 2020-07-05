@@ -36,3 +36,9 @@ class CurrentLocationAction {
 
   CurrentLocationAction(this.payload);
 }
+
+class ShowSearchAction {
+  bool payload;
+
+  ShowSearchAction(this.payload);
+}

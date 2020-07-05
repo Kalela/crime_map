@@ -1,6 +1,6 @@
-class Location {
+class CrimeAppLocation {
   var lat;
   var lng;
 
-  Location(this.lat, this.lng);
+  CrimeAppLocation(this.lat, this.lng);
 }

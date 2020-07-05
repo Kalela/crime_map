@@ -5,18 +5,18 @@ import 'location.dart';
 
 class AppState {
   bool isLoading = false;
-  bool showRegister = false;
+  bool showSearch = false;
   FirebaseUser user;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-  Location currentLocation;
+  CrimeAppLocation currentLocation;
 
   AppState();
 
   AppState.fromAppState(AppState another) {
     isLoading = another.isLoading;
-    showRegister = another.showRegister;
     user = another.user;
     markers = another.markers;
     currentLocation = another.currentLocation;
+    showSearch = another.showSearch;
   }
 }
