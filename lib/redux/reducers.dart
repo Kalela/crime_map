@@ -10,10 +10,13 @@ AppState reducer(AppState prevState, dynamic action) {
   } else if (action is IsLoadingAction) {
     newState.isLoading = action.payload;
   } else if (action is CurrentLocationAction) {
-    print("reducer payload ${action.payload}");
     newState.currentLocation = new CrimeAppLocation(action.payload.latitude, action.payload.longitude);
   } else if (action is ShowSearchAction) {
     newState.showSearch = action.payload;
+  } else if (action is SearchedLocationAction) {
+    newState.searchedLocation = action.payload;
+  } else if (action is MapMarkerAction) {
+    newState.markers.add(action.payload);
   }
 
   return newState;

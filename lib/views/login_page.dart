@@ -20,18 +20,31 @@ class LoginPage extends StatelessWidget {
       converter: (store) => store.state,
       builder: (context, state) {
         return WillPopScope(
-          onWillPop: () {
-          },
+          onWillPop: () {},
           child: Scaffold(
+              resizeToAvoidBottomInset: true,
               backgroundColor: appMainColor,
               body: Container(
                 padding: EdgeInsets.only(top: 300),
                 color: appMainColor,
-                child: Center(child: Column(
+                child: Center(
+                    child: Column(
                   children: <Widget>[
-                    Text(app_name, style: TextStyle(fontSize: fontSize32, color: Colors.white),),
-                    Padding(padding: EdgeInsets.only(top: padding150),),
-                    _signInButton(context, state),
+                    Flexible(
+                      flex: 2,
+                      child: Text(
+                        app_name,
+                        style: TextStyle(
+                            fontSize: fontSize32, color: Colors.white),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 2,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: padding150),
+                      ),
+                    ),
+                    Flexible(flex: 1, child: _signInButton(context, state)),
                   ],
                 )),
               )),
