@@ -25,7 +25,7 @@ class MapPage extends StatelessWidget {
   BitmapDescriptor mapIcon;
 
   Future<BitmapDescriptor> getIconBitMap() async {
-    final iconData = Icons.location_on;
+    final iconData = Icons.ac_unit;
     final pictureRecorder = PictureRecorder();
     final canvas = Canvas(pictureRecorder);
     final textPainter = TextPainter(textDirection: TextDirection.ltr);
@@ -59,8 +59,7 @@ class MapPage extends StatelessWidget {
     StoreProvider.of<AppState>(context).dispatch(MapMarkerAction(marker));
   }
 
-  void animateCameraPosition(
-      double lat, double lng, double zoom) {
+  void animateCameraPosition(double lat, double lng, double zoom) {
     mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
       target: LatLng(lat, lng),
       zoom: zoom,
@@ -73,12 +72,7 @@ class MapPage extends StatelessWidget {
         converter: (store) => store.state,
         builder: (context, state) {
           return StatefulWrapper(
-            onInit: () {
-              getIconBitMap().then((value) {
-                this.mapIcon = value;
-              });
-              print(mapIcon);
-            },
+            onInit: () {},
             child: WillPopScope(
               onWillPop: () {
                 if (state.showSearch) {
@@ -100,8 +94,13 @@ class MapPage extends StatelessWidget {
                           // controller.setMapStyle(_mapStyle);
                           mapController = controller;
                           _controller.complete(controller);
+                          getIconBitMap().then((value) {
+                            this.mapIcon = value;
+                          });
                           try {
                             getCurrentLocation(context).then((value) {
+                              StoreProvider.of<AppState>(context)
+                                  .dispatch(CurrentLocationAction(value));
                               print(
                                   "current location state ${state.currentLocation}");
                               location = state.currentLocation;

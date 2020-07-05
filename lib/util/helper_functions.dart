@@ -34,17 +34,19 @@ void signOutGoogle(googleSignIn) async {
   print("User Sign Out");
 }
 
-Future getCurrentLocation(BuildContext context) async {
+Future<Position> getCurrentLocation(BuildContext context) async {
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+  Position result;
 
   geolocator
       .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
       .then((Position position) {
-    StoreProvider.of<AppState>(context)
-        .dispatch(CurrentLocationAction(position));
+        result = position;
   }).catchError((e) {
     print(e);
   });
+
+  return result;
 }
 
 getLastKnownLocation(BuildContext context) {
