@@ -41,6 +41,7 @@ Future<CrimeAppLocation> getCurrentLocation(BuildContext context) async {
       .then((Position position) {
         result.lat = position.latitude;
         result.lng = position.longitude;
+        result.position = position;
   }).catchError((e) {
     print(e);
   });

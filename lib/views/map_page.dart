@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geocoder/geocoder.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 
@@ -101,8 +101,7 @@ class MapPage extends StatelessWidget {
                           if (value != null) {
                             StoreProvider.of<AppState>(context)
                                 .dispatch(CurrentLocationAction(value));
-                            animateCameraPosition(
-                                value.lat, value.lng, 14);
+                            animateCameraPosition(value.lat, value.lng, 14);
                           }
                         });
                       },
@@ -136,9 +135,8 @@ class MapPage extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.only(left: 16.0),
                               child: Text(
-                                "Crime Alert",
-                                style: TextStyle(
-                                    color: white, fontSize: fontSize32),
+                                app_name,
+                                style: GoogleFonts.bevan(fontSize: fontSize32, color: Colors.white, fontStyle: FontStyle.italic)
                               ),
                             ),
                             alignment: Alignment.centerLeft,
@@ -157,7 +155,7 @@ class MapPage extends StatelessWidget {
                               crossAxisAlignment: WrapCrossAlignment.start,
                               children: <Widget>[
                                 Container(
-                                  height: padding15,
+                                  height: padding60,
                                 ),
                                 Row(
                                   children: <Widget>[
@@ -229,6 +227,12 @@ class MapPage extends StatelessWidget {
                                                     .toDouble(),
                                                 state,
                                                 null);
+
+                                            details.result.addressComponents
+                                                .forEach((element) {
+                                              print(
+                                                  "address elements $element");
+                                            });
                                           }
                                         },
                                       ),
@@ -253,12 +257,12 @@ class MapPage extends StatelessWidget {
                                             padding:
                                                 EdgeInsets.only(top: padding5),
                                           ),
-                                          Text("Reporting")
+                                          Text("Reporting", style: GoogleFonts.lato(),)
                                         ],
                                       ))
                                     : Column(
                                         children: <Widget>[
-                                          Text(report_crime),
+                                          Text(report_crime, style: GoogleFonts.lato(color: Colors.white, fontSize: 18),),
                                           Padding(
                                             padding:
                                                 EdgeInsets.only(top: padding15),
@@ -269,7 +273,12 @@ class MapPage extends StatelessWidget {
                                             children: <Widget>[
                                               RaisedButton(
                                                 elevation: 20,
-                                                color: appMainColor,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12.0),
+                                                ),
+                                                color: Colors.white,
                                                 onPressed: () {
                                                   StoreProvider.of<AppState>(
                                                           context)
@@ -361,7 +370,12 @@ class MapPage extends StatelessWidget {
                                               ),
                                               RaisedButton(
                                                 elevation: 20,
-                                                color: appMainColor,
+                                                color: Colors.white,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12.0),
+                                                ),
                                                 onPressed: () {
                                                   StoreProvider.of<AppState>(
                                                           context)

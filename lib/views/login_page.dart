@@ -8,6 +8,7 @@ import 'package:crimemap/views/map_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatelessWidget {
@@ -34,8 +35,10 @@ class LoginPage extends StatelessWidget {
                       flex: 2,
                       child: Text(
                         app_name,
-                        style: TextStyle(
-                            fontSize: fontSize32, color: Colors.white),
+                        style: GoogleFonts.luckiestGuy(
+                            fontSize: fontSize40,
+                            color: Colors.white,
+                            fontStyle: FontStyle.italic),
                       ),
                     ),
                     Flexible(
@@ -89,11 +92,8 @@ class LoginPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 10),
               child: Text(
-                'Sign in with Google',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.black87,
-                ),
+                "Sign in with Google",
+                style: GoogleFonts.lato(fontSize: 20, color: Colors.black87),
               ),
             )
           ],
