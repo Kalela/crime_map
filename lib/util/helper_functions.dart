@@ -1,8 +1,6 @@
-import 'package:crimemap/model/app_state.dart';
-import 'package:crimemap/redux/actions.dart';
+import 'package:crimemap/model/location.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -34,30 +32,18 @@ void signOutGoogle(googleSignIn) async {
   print("User Sign Out");
 }
 
-Future<Position> getCurrentLocation(BuildContext context) async {
+Future<CrimeAppLocation> getCurrentLocation(BuildContext context) async {
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-  Position result;
+  CrimeAppLocation result = new CrimeAppLocation();
 
-  geolocator
+  await geolocator
       .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
       .then((Position position) {
-        result = position;
+        result.lat = position.latitude;
+        result.lng = position.longitude;
   }).catchError((e) {
     print(e);
   });
 
   return result;
-}
-
-getLastKnownLocation(BuildContext context) {
-  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-
-  geolocator
-      .getLastKnownPosition(desiredAccuracy: LocationAccuracy.best)
-      .then((Position position) {
-    StoreProvider.of<AppState>(context)
-        .dispatch(CurrentLocationAction(position));
-  }).catchError((e) {
-    print(e);
-  });
 }

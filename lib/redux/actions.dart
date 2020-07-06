@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_webservice/places.dart';
+import 'package:crimemap/model/location.dart';
 
 class ShowRegisterAction {
   final bool payload;
@@ -28,7 +28,7 @@ class MapMarkerAction {
 }
 
 class CurrentLocationAction {
-  Position payload;
+  CrimeAppLocation payload;
 
   CurrentLocationAction(this.payload);
 }
@@ -40,7 +40,13 @@ class ShowSearchAction {
 }
 
 class SearchedLocationAction {
-  Prediction payload;
+  CrimeAppLocation payload;
 
   SearchedLocationAction(this.payload);
+}
+
+class MarkerIdAction {
+  int payload;
+
+  MarkerIdAction(this.payload);
 }

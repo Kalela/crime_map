@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_webservice/places.dart';
 
 import 'location.dart';
 
@@ -11,7 +10,7 @@ class AppState {
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   int markerIdCounter = 0;
   CrimeAppLocation currentLocation;
-  Prediction searchedLocation;
+  CrimeAppLocation searchedLocation;
 
   AppState();
 

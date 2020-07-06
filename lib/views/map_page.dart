@@ -20,46 +20,35 @@ import 'package:google_maps_webservice/places.dart';
 class MapPage extends StatelessWidget {
   Completer<GoogleMapController> _controller = Completer();
   GoogleMapController mapController;
-  static const LatLng _center = const LatLng(45.521563, -122.677433);
-  CrimeAppLocation location;
+  static const LatLng _center = const LatLng(0.0236, 37.9062);
+  GoogleMapsPlaces _places =
+      GoogleMapsPlaces(apiKey: ConfigReader.getGoogleApiKey());
   CollectionReference fireStorePlaces = Firestore.instance.collection('places');
 
-  BitmapDescriptor mapIcon;
-
-  Future<BitmapDescriptor> getIconBitMap() async {
-    final iconData = Icons.ac_unit;
-    final pictureRecorder = PictureRecorder();
-    final canvas = Canvas(pictureRecorder);
-    final textPainter = TextPainter(textDirection: TextDirection.ltr);
-    final iconStr = String.fromCharCode(iconData.codePoint);
-    textPainter.text = TextSpan(
-        text: iconStr,
-        style: TextStyle(
-          letterSpacing: 0.0,
-          fontSize: 48.0,
-          fontFamily: iconData.fontFamily,
-          color: Colors.red,
-        ));
-    textPainter.layout();
-    textPainter.paint(canvas, Offset(0.0, 0.0));
-    final picture = pictureRecorder.endRecording();
-    final image = await picture.toImage(48, 48);
-    final bytes = await image.toByteData(format: ImageByteFormat.png);
-    final bitmapDescriptor =
-        BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
-
-    return bitmapDescriptor;
-  }
-
-  void addMarkerToMarkerList(
-      BuildContext context, double lat, double lng, AppState state) async {
+  void addMarkerToMarkerList(BuildContext context, double lat, double lng,
+      AppState state, int crimesReported) async {
+    BitmapDescriptor markerIcon;
+    if (crimesReported > 0 && crimesReported < 5) {
+      markerIcon =
+          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+    } else if (crimesReported > 5 && crimesReported < 20) {
+      markerIcon =
+          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange);
+    } else if (crimesReported > 20) {
+      markerIcon =
+          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
+    }
     Marker marker = Marker(
-      markerId: MarkerId("marker_id_${state.markerIdCounter++}"),
-      position: LatLng(lat, lng),
-      visible: true,
-      alpha: 1.0,
-    );
+        markerId: MarkerId("marker_id_${state.markerIdCounter++}"),
+        position: LatLng(lat, lng),
+        visible: true,
+        alpha: 1.0,
+        infoWindow: InfoWindow(
+            title: "Crimes reported", snippet: crimesReported.toString()),
+        icon: markerIcon);
     StoreProvider.of<AppState>(context).dispatch(MapMarkerAction(marker));
+    StoreProvider.of<AppState>(context)
+        .dispatch(MarkerIdAction(state.markerIdCounter++));
   }
 
   void animateCameraPosition(double lat, double lng, double zoom) {
@@ -86,29 +75,36 @@ class MapPage extends StatelessWidget {
               backgroundColor: whiteBackGround,
               body: Stack(
                 children: <Widget>[
+                  StreamBuilder(
+                    stream: fireStorePlaces.snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<dynamic> snapshot) {
+                      if (snapshot.hasData) {
+                        for (var locatn in snapshot.data.documents) {
+                          addMarkerToMarkerList(context, locatn['lat'],
+                              locatn['lng'], state, locatn['crimes_reported']);
+                        }
+                      }
+
+                      return Container();
+                    },
+                  ),
                   Container(
                     child: GoogleMap(
                       initialCameraPosition:
-                          CameraPosition(target: _center, zoom: 10.0),
+                          CameraPosition(target: _center, zoom: 5.0),
                       mapType: MapType.normal,
-                      onMapCreated: (GoogleMapController controller) {
-                        // controller.setMapStyle(_mapStyle);
+                      onMapCreated: (GoogleMapController controller) async {
                         mapController = controller;
                         _controller.complete(controller);
-                        getIconBitMap().then((value) {
-                          this.mapIcon = value;
-                        });
-                        try {
-                          getCurrentLocation(context).then((value) {
+                        await getCurrentLocation(context).then((value) {
+                          if (value != null) {
                             StoreProvider.of<AppState>(context)
                                 .dispatch(CurrentLocationAction(value));
-                            location = state.currentLocation;
                             animateCameraPosition(
-                                location.lat, location.lng, 14);
-                          });
-                        } catch (e) {
-                          print(e);
-                        }
+                                value.lat, value.lng, 14);
+                          }
+                        });
                       },
                       markers: Set<Marker>.of(getMapMarkers(state)),
                       zoomControlsEnabled: false,
@@ -174,11 +170,14 @@ class MapPage extends StatelessWidget {
                                         decoration: InputDecoration(
                                           hintText:
                                               state.searchedLocation == null ||
-                                                      state.searchedLocation
-                                                          .description.isEmpty
+                                                      state
+                                                          .searchedLocation
+                                                          .prediction
+                                                          .description
+                                                          .isEmpty
                                                   ? search_location
                                                   : state.searchedLocation
-                                                      .description,
+                                                      .prediction.description,
                                           fillColor: Color.fromARGB(
                                               255, 255, 255, 255),
                                           filled: true,
@@ -187,7 +186,8 @@ class MapPage extends StatelessWidget {
                                           Prediction p =
                                               await PlacesAutocomplete.show(
                                                   context: context,
-                                                  apiKey: ConfigReader.getGoogleApiKey(),
+                                                  apiKey: ConfigReader
+                                                      .getGoogleApiKey(),
                                                   mode: Mode.overlay,
                                                   language: "en",
                                                   components: [
@@ -195,26 +195,40 @@ class MapPage extends StatelessWidget {
                                                     Component.country, "ke")
                                               ]);
                                           if (p != null) {
+                                            PlacesDetailsResponse details =
+                                                await _places
+                                                    .getDetailsByPlaceId(
+                                                        p.placeId);
+
+                                            CrimeAppLocation current =
+                                                new CrimeAppLocation();
+                                            current.prediction = p;
+                                            current.lat = details
+                                                .result.geometry.location.lat;
+                                            current.lng = details
+                                                .result.geometry.location.lng;
                                             StoreProvider.of<AppState>(context)
                                                 .dispatch(
-                                                    SearchedLocationAction(p));
-                                            var addresses = await Geocoder.local
-                                                .findAddressesFromQuery(
-                                                    p.description);
-                                            var first = addresses.first;
+                                                    SearchedLocationAction(
+                                                        current));
                                             animateCameraPosition(
-                                                first.coordinates.latitude
+                                                details.result.geometry.location
+                                                    .lat
                                                     .toDouble(),
-                                                first.coordinates.longitude
+                                                details.result.geometry.location
+                                                    .lng
                                                     .toDouble(),
                                                 15.0);
                                             addMarkerToMarkerList(
                                                 context,
-                                                first.coordinates.latitude
+                                                details.result.geometry.location
+                                                    .lat
                                                     .toDouble(),
-                                                first.coordinates.longitude
+                                                details.result.geometry.location
+                                                    .lat
                                                     .toDouble(),
-                                                state);
+                                                state,
+                                                null);
                                           }
                                         },
                                       ),
@@ -257,16 +271,16 @@ class MapPage extends StatelessWidget {
                                                 elevation: 20,
                                                 color: appMainColor,
                                                 onPressed: () {
-                                                  //TODO: Use current location
                                                   StoreProvider.of<AppState>(
                                                           context)
                                                       .dispatch(IsLoadingAction(
                                                           true));
-                                                  if (state.searchedLocation !=
+                                                  if (state.currentLocation !=
                                                       null) {
                                                     fireStorePlaces
                                                         .document(state
-                                                            .searchedLocation
+                                                            .currentLocation
+                                                            .prediction
                                                             .placeId)
                                                         .get()
                                                         .then((DocumentSnapshot
@@ -274,15 +288,23 @@ class MapPage extends StatelessWidget {
                                                       if (value.exists) {
                                                         fireStorePlaces
                                                             .document(state
-                                                                .searchedLocation
+                                                                .currentLocation
+                                                                .prediction
                                                                 .placeId)
                                                             .updateData({
                                                           'crimes_reported':
                                                               FieldValue
                                                                   .increment(1),
                                                           'name': state
-                                                              .searchedLocation
-                                                              .description
+                                                              .currentLocation
+                                                              .prediction
+                                                              .description,
+                                                          'lat': state
+                                                              .currentLocation
+                                                              .lat,
+                                                          'lng': state
+                                                              .currentLocation
+                                                              .lng
                                                         }).then((value) {
                                                           StoreProvider.of<
                                                                       AppState>(
@@ -296,15 +318,23 @@ class MapPage extends StatelessWidget {
                                                       } else {
                                                         fireStorePlaces
                                                             .document(state
-                                                                .searchedLocation
+                                                                .currentLocation
+                                                                .prediction
                                                                 .placeId)
                                                             .setData({
                                                           'crimes_reported':
                                                               FieldValue
                                                                   .increment(1),
                                                           'name': state
-                                                              .searchedLocation
-                                                              .description
+                                                              .currentLocation
+                                                              .prediction
+                                                              .description,
+                                                          'lat': state
+                                                              .currentLocation
+                                                              .lat,
+                                                          'lng': state
+                                                              .currentLocation
+                                                              .lng
                                                         }).then((value) {
                                                           StoreProvider.of<
                                                                       AppState>(
@@ -342,6 +372,7 @@ class MapPage extends StatelessWidget {
                                                     fireStorePlaces
                                                         .document(state
                                                             .searchedLocation
+                                                            .prediction
                                                             .placeId)
                                                         .get()
                                                         .then((DocumentSnapshot
@@ -350,6 +381,7 @@ class MapPage extends StatelessWidget {
                                                         fireStorePlaces
                                                             .document(state
                                                                 .searchedLocation
+                                                                .prediction
                                                                 .placeId)
                                                             .updateData({
                                                           'crimes_reported':
@@ -357,7 +389,14 @@ class MapPage extends StatelessWidget {
                                                                   .increment(1),
                                                           'name': state
                                                               .searchedLocation
-                                                              .description
+                                                              .prediction
+                                                              .description,
+                                                          'lat': state
+                                                              .searchedLocation
+                                                              .lat,
+                                                          'lng': state
+                                                              .searchedLocation
+                                                              .lng
                                                         }).then((value) {
                                                           StoreProvider.of<
                                                                       AppState>(
@@ -372,6 +411,7 @@ class MapPage extends StatelessWidget {
                                                         fireStorePlaces
                                                             .document(state
                                                                 .searchedLocation
+                                                                .prediction
                                                                 .placeId)
                                                             .setData({
                                                           'crimes_reported':
@@ -379,7 +419,14 @@ class MapPage extends StatelessWidget {
                                                                   .increment(1),
                                                           'name': state
                                                               .searchedLocation
-                                                              .description
+                                                              .prediction
+                                                              .description,
+                                                          'lat': state
+                                                              .searchedLocation
+                                                              .lat,
+                                                          'lng': state
+                                                              .searchedLocation
+                                                              .lng
                                                         }).then((value) {
                                                           StoreProvider.of<
                                                                       AppState>(
