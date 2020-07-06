@@ -2,7 +2,7 @@
 
 [![Codemagic build status](https://api.codemagic.io/apps/5f028f9d8553e950c07cc213/5f028f9d8553e950c07cc212/status_badge.svg)](https://codemagic.io/apps/5f028f9d8553e950c07cc213/5f028f9d8553e950c07cc212/latest_build)
 
-Crime map application.
+Crime Alert application.
 
 ## Getting Started
 
