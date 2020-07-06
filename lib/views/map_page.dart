@@ -119,7 +119,7 @@ class MapPage extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.only(right: 90.0, bottom: 90),
                       child:
-                          state.isLoading ? CircularProgressIndicator() : null,
+                          state.isLoading && state.currentLocation == null ? CircularProgressIndicator() : Container(),
                     ),
                   ),
                   !state.showSearch
@@ -138,7 +138,7 @@ class MapPage extends StatelessWidget {
                             ),
                           ),
                         )
-                      : null,
+                      : Container(),
                   !state.showSearch
                       ? Container(
                           alignment: Alignment.topCenter,
