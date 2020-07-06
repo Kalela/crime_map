@@ -5,7 +5,7 @@ import 'package:crimemap/model/app_state.dart';
 import 'package:crimemap/model/location.dart';
 import 'package:crimemap/redux/actions.dart';
 import 'package:crimemap/util/helper_functions.dart';
-import 'package:crimemap/util/secrets.dart';
+import 'package:crimemap/util/config_reader.dart';
 import 'package:crimemap/util/strings.dart';
 import 'package:crimemap/util/color_constants.dart';
 import 'package:crimemap/util/size_constants.dart';
@@ -52,11 +52,10 @@ class MapPage extends StatelessWidget {
   }
 
   void addMarkerToMarkerList(
-      BuildContext context, double lat, double lng, String placeid) async {
+      BuildContext context, double lat, double lng, AppState state) async {
     Marker marker = Marker(
-      markerId: MarkerId(placeid),
+      markerId: MarkerId("marker_id_${state.markerIdCounter++}"),
       position: LatLng(lat, lng),
-      // icon: mapIcon,
       visible: true,
       alpha: 1.0,
     );
@@ -103,8 +102,6 @@ class MapPage extends StatelessWidget {
                           getCurrentLocation(context).then((value) {
                             StoreProvider.of<AppState>(context)
                                 .dispatch(CurrentLocationAction(value));
-                            print(
-                                "current location state ${state.currentLocation}");
                             location = state.currentLocation;
                             animateCameraPosition(
                                 location.lat, location.lng, 14);
@@ -190,7 +187,7 @@ class MapPage extends StatelessWidget {
                                           Prediction p =
                                               await PlacesAutocomplete.show(
                                                   context: context,
-                                                  apiKey: googleApiKey,
+                                                  apiKey: ConfigReader.getGoogleApiKey(),
                                                   mode: Mode.overlay,
                                                   language: "en",
                                                   components: [
@@ -215,9 +212,9 @@ class MapPage extends StatelessWidget {
                                                 context,
                                                 first.coordinates.latitude
                                                     .toDouble(),
-                                                first.coordinates.latitude
+                                                first.coordinates.longitude
                                                     .toDouble(),
-                                                p.placeId);
+                                                state);
                                           }
                                         },
                                       ),
@@ -336,10 +333,6 @@ class MapPage extends StatelessWidget {
                                                 elevation: 20,
                                                 color: appMainColor,
                                                 onPressed: () {
-                                                  state.markers.forEach((key, value) {
-                                                    print("markers state position ${value.position}");
-                                                  });
-                                                  
                                                   StoreProvider.of<AppState>(
                                                           context)
                                                       .dispatch(IsLoadingAction(
@@ -429,7 +422,6 @@ class MapPage extends StatelessWidget {
   }
 
   getMapMarkers(AppState state) {
-    print("markers state ${state.markers.keys}");
     return state.markers.values;
   }
 
