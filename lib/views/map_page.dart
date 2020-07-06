@@ -20,7 +20,7 @@ import 'package:google_maps_webservice/places.dart';
 class MapPage extends StatelessWidget {
   Completer<GoogleMapController> _controller = Completer();
   GoogleMapController mapController;
-  static const LatLng _center = const LatLng(0.0236, 37.9062);
+  static const LatLng _center = const LatLng(0, 0);
   GoogleMapsPlaces _places =
       GoogleMapsPlaces(apiKey: ConfigReader.getGoogleApiKey());
   CollectionReference fireStorePlaces = Firestore.instance.collection('places');
@@ -97,16 +97,29 @@ class MapPage extends StatelessWidget {
                       onMapCreated: (GoogleMapController controller) async {
                         mapController = controller;
                         _controller.complete(controller);
+                        StoreProvider.of<AppState>(context)
+                            .dispatch(IsLoadingAction(true));
                         await getCurrentLocation(context).then((value) {
                           if (value != null) {
                             StoreProvider.of<AppState>(context)
                                 .dispatch(CurrentLocationAction(value));
+
                             animateCameraPosition(value.lat, value.lng, 14);
                           }
                         });
+                        StoreProvider.of<AppState>(context)
+                            .dispatch(IsLoadingAction(false));
                       },
                       markers: Set<Marker>.of(getMapMarkers(state)),
                       zoomControlsEnabled: false,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 90.0, bottom: 90),
+                      child:
+                          state.isLoading ? CircularProgressIndicator() : null,
                     ),
                   ),
                   !state.showSearch
@@ -125,7 +138,7 @@ class MapPage extends StatelessWidget {
                             ),
                           ),
                         )
-                      : Container(),
+                      : null,
                   !state.showSearch
                       ? Container(
                           alignment: Alignment.topCenter,
@@ -134,10 +147,11 @@ class MapPage extends StatelessWidget {
                           child: Align(
                             child: Padding(
                               padding: const EdgeInsets.only(left: 16.0),
-                              child: Text(
-                                app_name,
-                                style: GoogleFonts.bevan(fontSize: fontSize32, color: Colors.white, fontStyle: FontStyle.italic)
-                              ),
+                              child: Text(app_name,
+                                  style: GoogleFonts.bevan(
+                                      fontSize: fontSize32,
+                                      color: Colors.white,
+                                      fontStyle: FontStyle.italic)),
                             ),
                             alignment: Alignment.centerLeft,
                           ),
@@ -190,7 +204,9 @@ class MapPage extends StatelessWidget {
                                                   language: "en",
                                                   components: [
                                                 new Component(
-                                                    Component.country, "ke")
+                                                    Component.country,
+                                                    state.currentLocation
+                                                        .countryISO)
                                               ]);
                                           if (p != null) {
                                             PlacesDetailsResponse details =
@@ -227,12 +243,6 @@ class MapPage extends StatelessWidget {
                                                     .toDouble(),
                                                 state,
                                                 null);
-
-                                            details.result.addressComponents
-                                                .forEach((element) {
-                                              print(
-                                                  "address elements $element");
-                                            });
                                           }
                                         },
                                       ),
@@ -257,12 +267,20 @@ class MapPage extends StatelessWidget {
                                             padding:
                                                 EdgeInsets.only(top: padding5),
                                           ),
-                                          Text("Reporting", style: GoogleFonts.lato(),)
+                                          Text(
+                                            "Reporting",
+                                            style: GoogleFonts.lato(),
+                                          )
                                         ],
                                       ))
                                     : Column(
                                         children: <Widget>[
-                                          Text(report_crime, style: GoogleFonts.lato(color: Colors.white, fontSize: 18),),
+                                          Text(
+                                            report_crime,
+                                            style: GoogleFonts.lato(
+                                                color: Colors.white,
+                                                fontSize: 18),
+                                          ),
                                           Padding(
                                             padding:
                                                 EdgeInsets.only(top: padding15),
@@ -289,8 +307,7 @@ class MapPage extends StatelessWidget {
                                                     fireStorePlaces
                                                         .document(state
                                                             .currentLocation
-                                                            .prediction
-                                                            .placeId)
+                                                            .roughid)
                                                         .get()
                                                         .then((DocumentSnapshot
                                                             value) {
@@ -298,16 +315,14 @@ class MapPage extends StatelessWidget {
                                                         fireStorePlaces
                                                             .document(state
                                                                 .currentLocation
-                                                                .prediction
-                                                                .placeId)
+                                                                .roughid)
                                                             .updateData({
                                                           'crimes_reported':
                                                               FieldValue
                                                                   .increment(1),
                                                           'name': state
                                                               .currentLocation
-                                                              .prediction
-                                                              .description,
+                                                              .roughname,
                                                           'lat': state
                                                               .currentLocation
                                                               .lat,
@@ -328,16 +343,14 @@ class MapPage extends StatelessWidget {
                                                         fireStorePlaces
                                                             .document(state
                                                                 .currentLocation
-                                                                .prediction
-                                                                .placeId)
+                                                                .roughid)
                                                             .setData({
                                                           'crimes_reported':
                                                               FieldValue
                                                                   .increment(1),
                                                           'name': state
                                                               .currentLocation
-                                                              .prediction
-                                                              .description,
+                                                              .roughname,
                                                           'lat': state
                                                               .currentLocation
                                                               .lat,

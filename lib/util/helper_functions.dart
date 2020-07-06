@@ -35,6 +35,7 @@ void signOutGoogle(googleSignIn) async {
 Future<CrimeAppLocation> getCurrentLocation(BuildContext context) async {
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
   CrimeAppLocation result = new CrimeAppLocation();
+  
 
   await geolocator
       .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
@@ -45,6 +46,14 @@ Future<CrimeAppLocation> getCurrentLocation(BuildContext context) async {
   }).catchError((e) {
     print(e);
   });
+
+  List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(result.lat, result.lng);
+
+  for (Placemark mark in placemark) {
+    result.countryISO = mark.isoCountryCode;
+    result.roughname = mark.thoroughfare;
+    result.roughid = mark.thoroughfare + mark.isoCountryCode;
+  }
 
   return result;
 }

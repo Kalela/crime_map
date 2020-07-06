@@ -6,6 +6,9 @@ class CrimeAppLocation {
   var lng;
   Prediction prediction;
   Position position;
+  String countryISO = "ke";
+  String roughname = "Unknown";
+  String roughid = "rough_id";
 
   CrimeAppLocation();
 }
