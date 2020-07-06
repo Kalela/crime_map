@@ -325,7 +325,7 @@ class MapPage extends StatelessWidget {
                                                             context)
                                                         .dispatch(
                                                             IsLoadingAction(
-                                                                true));
+                                                                false));
                                                     showFailToast(context);
                                                   }
                                                 },
@@ -336,6 +336,10 @@ class MapPage extends StatelessWidget {
                                                 elevation: 20,
                                                 color: appMainColor,
                                                 onPressed: () {
+                                                  state.markers.forEach((key, value) {
+                                                    print("markers state position ${value.position}");
+                                                  });
+                                                  
                                                   StoreProvider.of<AppState>(
                                                           context)
                                                       .dispatch(IsLoadingAction(
@@ -389,7 +393,7 @@ class MapPage extends StatelessWidget {
                                                                   context)
                                                               .dispatch(
                                                                   IsLoadingAction(
-                                                                      true));
+                                                                      false));
                                                           showSuccessToast(
                                                               context);
                                                         });
@@ -400,7 +404,7 @@ class MapPage extends StatelessWidget {
                                                             context)
                                                         .dispatch(
                                                             IsLoadingAction(
-                                                                true));
+                                                                false));
                                                     showFailToast(context);
                                                   }
                                                 },
@@ -446,6 +450,5 @@ class MapPage extends StatelessWidget {
         webBgColor: "#e74c3c",
         timeInSecForIosWeb: 5,
         gravity: ToastGravity.BOTTOM);
-    StoreProvider.of<AppState>(context).dispatch(IsLoadingAction(false));
   }
 }
