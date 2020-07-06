@@ -6,9 +6,13 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
 import 'model/app_state.dart';
-import 'util/colorconstants.dart';
+import 'util/color_constants.dart';
+import 'package:crimemap/util/config_reader.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await ConfigReader.initialize();
+
   var appState = AppState();
   final _initialState = appState;
   final Store<AppState> _store =

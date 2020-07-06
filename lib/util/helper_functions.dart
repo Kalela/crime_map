@@ -1,4 +1,7 @@
+import 'package:crimemap/model/location.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 Future<FirebaseUser> signInWithGoogle(_auth, googleSignIn) async {
@@ -23,9 +26,34 @@ Future<FirebaseUser> signInWithGoogle(_auth, googleSignIn) async {
   return currentUser;
 }
 
-
 void signOutGoogle(googleSignIn) async {
   await googleSignIn.signOut();
 
   print("User Sign Out");
+}
+
+Future<CrimeAppLocation> getCurrentLocation(BuildContext context) async {
+  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+  CrimeAppLocation result = new CrimeAppLocation();
+  
+
+  await geolocator
+      .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+      .then((Position position) {
+        result.lat = position.latitude;
+        result.lng = position.longitude;
+        result.position = position;
+  }).catchError((e) {
+    print(e);
+  });
+
+  List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(result.lat, result.lng);
+
+  for (Placemark mark in placemark) {
+    result.countryISO = mark.isoCountryCode;
+    result.roughname = mark.thoroughfare;
+    result.roughid = mark.thoroughfare + mark.isoCountryCode;
+  }
+
+  return result;
 }

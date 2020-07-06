@@ -1,12 +1,14 @@
 import 'package:crimemap/model/app_state.dart';
 import 'package:crimemap/redux/actions.dart';
-import 'package:crimemap/util/colorconstants.dart';
+import 'package:crimemap/util/color_constants.dart';
 import 'package:crimemap/util/helper_functions.dart';
+import 'package:crimemap/util/size_constants.dart';
 import 'package:crimemap/util/strings.dart';
 import 'package:crimemap/views/map_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatelessWidget {
@@ -19,31 +21,46 @@ class LoginPage extends StatelessWidget {
       converter: (store) => store.state,
       builder: (context, state) {
         return WillPopScope(
-          onWillPop: () {
-            if (state.showRegister == true) {
-              StoreProvider.of<AppState>(context)
-                  .dispatch(ShowRegisterAction(false));
-            } else {
-              Navigator.pop(context);
-            }
-          },
+          onWillPop: () {},
           child: Scaffold(
-              backgroundColor: whiteBackGround,
+              resizeToAvoidBottomInset: true,
+              backgroundColor: appMainColor,
               body: Container(
                 padding: EdgeInsets.only(top: 300),
-                color: whiteBackGround,
+                color: appMainColor,
                 child: Center(
-                    child: _signInButton(context)),
+                    child: Column(
+                  children: <Widget>[
+                    Flexible(
+                      flex: 2,
+                      child: Text(
+                        app_name,
+                        style: GoogleFonts.luckiestGuy(
+                            fontSize: fontSize40,
+                            color: Colors.white,
+                            fontStyle: FontStyle.italic),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 2,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: padding150),
+                      ),
+                    ),
+                    Flexible(flex: 1, child: _signInButton(context, state)),
+                  ],
+                )),
               )),
         );
       },
     );
   }
 
-  Widget _signInButton(BuildContext context) {
-    return OutlineButton(
-      splashColor: Colors.grey,
+  Widget _signInButton(BuildContext context, AppState state) {
+    return RaisedButton(
+      splashColor: appMainColor,
       onPressed: () {
+        StoreProvider.of<AppState>(context).dispatch(IsLoadingAction(true));
         signInWithGoogle(_auth, googleSignIn).then((value) {
           if (value != null) {
             StoreProvider.of<AppState>(context)
@@ -51,6 +68,8 @@ class LoginPage extends StatelessWidget {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) {
+                  StoreProvider.of<AppState>(context)
+                      .dispatch(IsLoadingAction(false));
                   return MapPage();
                 },
               ),
@@ -60,22 +79,21 @@ class LoginPage extends StatelessWidget {
       },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       highlightElevation: 0,
-      borderSide: BorderSide(color: Colors.grey),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image(image: AssetImage("assets/google_logo.png"), height: 35.0),
+            state.isLoading
+                ? CircularProgressIndicator()
+                : Image(
+                    image: AssetImage("assets/google_logo.png"), height: 35.0),
             Padding(
               padding: const EdgeInsets.only(left: 10),
               child: Text(
-                'Sign in with Google',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.grey,
-                ),
+                "Sign in with Google",
+                style: GoogleFonts.lato(fontSize: 20, color: Colors.black87),
               ),
             )
           ],
