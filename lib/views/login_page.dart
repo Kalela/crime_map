@@ -62,11 +62,11 @@ class LoginPage extends StatelessWidget {
           if (value != null) {
             StoreProvider.of<AppState>(context)
                 .dispatch(FirebaseUserAction(value));
-            StoreProvider.of<AppState>(context)
-                .dispatch(IsLoadingAction(false));
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) {
+                  StoreProvider.of<AppState>(context)
+                      .dispatch(IsLoadingAction(false));
                   return MapPage();
                 },
               ),

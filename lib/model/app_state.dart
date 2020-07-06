@@ -8,7 +8,8 @@ class AppState {
   bool isLoading = false;
   bool showSearch = false;
   FirebaseUser user;
-  Set<Marker> markers = new Set<Marker>();
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  int markerIdConter = 0;
   CrimeAppLocation currentLocation;
   Prediction searchedLocation;
 
@@ -21,5 +22,6 @@ class AppState {
     currentLocation = another.currentLocation;
     showSearch = another.showSearch;
     searchedLocation = another.searchedLocation;
+    markerIdConter = another.markerIdConter;
   }
 }
